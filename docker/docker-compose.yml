@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    container_name: powergrid-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - powergrid-data:/app/data
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    container_name: powergrid-frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+
+volumes:
+  powergrid-data:

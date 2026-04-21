@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: powergrid
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+powergrid:
+  robustness:
+    data-dir: ./data
+    checkpoint-interval-seconds: 60
+  distances:
+    max-plant-substation: 50
+    max-substation-transformer: 25
+    max-transformer-customer: 10
+
+logging:
+  level:
+    edu.gatech.cs6310.powergrid: INFO
