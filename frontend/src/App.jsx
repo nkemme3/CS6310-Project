@@ -1,30 +1,34 @@
-import { useEffect, useState } from 'react';
-import { getHealth } from './api/client.js';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout.jsx';
+import { ToastProvider } from './components/Toast.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import Companies from './pages/Companies.jsx';
+import Infrastructure from './pages/Infrastructure.jsx';
+import Customers from './pages/Customers.jsx';
+import Employees from './pages/Employees.jsx';
+import Issues from './pages/Issues.jsx';
+import RatePlans from './pages/RatePlans.jsx';
+import Billing from './pages/Billing.jsx';
+import Reports from './pages/Reports.jsx';
 
 export default function App() {
-  const [health, setHealth] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    getHealth()
-      .then(setHealth)
-      .catch((e) => setError(e.message));
-  }, []);
-
   return (
-    <main className="app">
-      <header>
-        <h1>Power Grid</h1>
-        <p className="subtitle">CS6310 Group 30 &mdash; Spring 2026</p>
-      </header>
-      <section>
-        <h2>Backend health</h2>
-        {error && <p className="error">Error: {error}</p>}
-        {!error && !health && <p>Checking...</p>}
-        {health && (
-          <pre className="health">{JSON.stringify(health, null, 2)}</pre>
-        )}
-      </section>
-    </main>
+    <ToastProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="companies" element={<Companies />} />
+            <Route path="infrastructure" element={<Infrastructure />} />
+            <Route path="customers" element={<Customers />} />
+            <Route path="employees" element={<Employees />} />
+            <Route path="issues" element={<Issues />} />
+            <Route path="rate-plans" element={<RatePlans />} />
+            <Route path="billing" element={<Billing />} />
+            <Route path="reports" element={<Reports />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ToastProvider>
   );
 }
