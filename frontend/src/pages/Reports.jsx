@@ -6,6 +6,7 @@ export default function Reports() {
   const [companies, setCompanies] = useState([]);
   const [summary, setSummary] = useState(null);
   const [ledger, setLedger] = useState([]);
+  const [sources, setSources] = useState(null);
   const [form, setForm] = useState({ companyShortName: '', from: '', to: '' });
   const toast = useToast();
 
@@ -19,6 +20,9 @@ export default function Reports() {
     Api.ledger(form.companyShortName)
       .then(setLedger)
       .catch((err) => toast.error(extractError(err)));
+    Api.sources(form.companyShortName, form.from || null, form.to || null)
+      .then(setSources)
+      .catch(() => setSources(null));
   };
 
   return (
@@ -45,6 +49,31 @@ export default function Reports() {
           <div>Net income: ${summary.netIncome}</div>
           <div>kWh produced: {summary.totalKWhProduced}</div>
           <div>kWh billed: {summary.totalKWhBilled}</div>
+        </div>
+      )}
+
+      {sources && sources.rows.length > 0 && (
+        <div className="card">
+          <h3>Generation mix</h3>
+          <div>Total kWh: {String(sources.totalKWh)}</div>
+          <div>Renewable kWh: {String(sources.renewableKWh)}</div>
+          <div>Estimated carbon: {String(sources.totalEstimatedCarbonKg)} kg CO2</div>
+          <table className="ledger">
+            <thead>
+              <tr><th>Source</th><th>Renewable</th><th>Plants</th><th>kWh</th><th>CO2 (kg)</th></tr>
+            </thead>
+            <tbody>
+              {sources.rows.map((r) => (
+                <tr key={r.source}>
+                  <td>{r.source}</td>
+                  <td>{r.renewable ? 'yes' : 'no'}</td>
+                  <td>{r.plantCount}</td>
+                  <td>{String(r.kWhProduced)}</td>
+                  <td>{String(r.estimatedCarbonKg)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

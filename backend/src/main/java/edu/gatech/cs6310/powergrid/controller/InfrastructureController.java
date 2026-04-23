@@ -38,7 +38,7 @@ public class InfrastructureController {
         PlantView v = PlantView.from(service.addPlant(
             req.companyShortName(), req.plantId(),
             req.location() == null ? null : req.location().toDomain(),
-            req.buildCost(), req.generationCostPerKWh()
+            req.buildCost(), req.generationCostPerKWh(), req.energySource()
         ));
         return ResponseEntity.status(201).body(v);
     }

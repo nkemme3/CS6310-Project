@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.gatech.cs6310.powergrid.api.Dtos.LedgerEntryView;
 import edu.gatech.cs6310.powergrid.service.ReportingService;
 import edu.gatech.cs6310.powergrid.service.ReportingService.CompanySummary;
+import edu.gatech.cs6310.powergrid.service.ReportingService.SourceBreakdown;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -36,5 +37,14 @@ public class ReportingController {
     @GetMapping("/companies/{shortName}/ledger")
     public List<LedgerEntryView> ledger(@PathVariable String shortName) {
         return service.ledgerFor(shortName).stream().map(LedgerEntryView::from).toList();
+    }
+
+    @GetMapping("/companies/{shortName}/sources")
+    public SourceBreakdown sources(
+        @PathVariable String shortName,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+    ) {
+        return service.sourceBreakdown(shortName, from, to);
     }
 }

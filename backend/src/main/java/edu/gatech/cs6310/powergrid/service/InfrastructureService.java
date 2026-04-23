@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.springframework.stereotype.Service;
 
+import edu.gatech.cs6310.powergrid.domain.EnergySourceType;
 import edu.gatech.cs6310.powergrid.domain.Location;
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
 import edu.gatech.cs6310.powergrid.domain.PowerPlant;
@@ -26,16 +27,24 @@ public class InfrastructureService {
         this.journal = journal;
     }
 
+    /** Legacy overload — callers that don't specify an energy source get the default. */
     public PowerPlant addPlant(String companyShortName, String plantId, Location location,
                                BigDecimal buildCost, BigDecimal generationCostPerKWh) {
+        return addPlant(companyShortName, plantId, location, buildCost, generationCostPerKWh, null);
+    }
+
+    public PowerPlant addPlant(String companyShortName, String plantId, Location location,
+                               BigDecimal buildCost, BigDecimal generationCostPerKWh,
+                               EnergySourceType energySource) {
         ProofService.validateNotBlank("plantId", plantId);
         ProofService.validatePositive("buildCost", buildCost);
         ProofService.validatePositive("generationCostPerKWh", generationCostPerKWh);
+        EnergySourceType source = energySource == null ? PowerPlant.DEFAULT_ENERGY_SOURCE : energySource;
         synchronized (pgs.lock()) {
             ProofService.validateExists("Power company", companyShortName, pgs.companies());
             ProofService.validateAvailableId("Power plant", plantId, pgs.plants());
             JournalCommand.AddPlantCmd cmd = new JournalCommand.AddPlantCmd(
-                companyShortName, plantId, location, buildCost, generationCostPerKWh);
+                companyShortName, plantId, location, buildCost, generationCostPerKWh, source);
             journal.append(cmd);
             cmd.apply(pgs);
             return pgs.plants().get(plantId);

@@ -15,6 +15,7 @@ import edu.gatech.cs6310.powergrid.domain.AssetType;
 import edu.gatech.cs6310.powergrid.domain.Customer;
 import edu.gatech.cs6310.powergrid.domain.CustomerType;
 import edu.gatech.cs6310.powergrid.domain.Employee;
+import edu.gatech.cs6310.powergrid.domain.EnergySourceType;
 import edu.gatech.cs6310.powergrid.domain.EquipmentIssue;
 import edu.gatech.cs6310.powergrid.domain.IssueStatus;
 import edu.gatech.cs6310.powergrid.domain.LedgerEntry;
@@ -97,10 +98,12 @@ public sealed interface JournalCommand permits
     // -- Infrastructure ------------------------------------------------
 
     record AddPlantCmd(String companyShortName, String plantId, Location location,
-                       BigDecimal buildCost, BigDecimal generationCostPerKWh) implements JournalCommand {
+                       BigDecimal buildCost, BigDecimal generationCostPerKWh,
+                       EnergySourceType energySource) implements JournalCommand {
         @Override
         public void apply(PowerGridSystem pgs) {
-            PowerPlant p = new PowerPlant(plantId, companyShortName, location, buildCost, generationCostPerKWh);
+            PowerPlant p = new PowerPlant(plantId, companyShortName, location, buildCost,
+                generationCostPerKWh, energySource);
             pgs.plants().put(plantId, p);
             PowerCompany c = pgs.companies().get(companyShortName);
             if (c != null) c.getPlantIds().add(plantId);

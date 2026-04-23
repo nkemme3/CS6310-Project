@@ -11,6 +11,7 @@ import edu.gatech.cs6310.powergrid.domain.AssetType;
 import edu.gatech.cs6310.powergrid.domain.Customer;
 import edu.gatech.cs6310.powergrid.domain.CustomerType;
 import edu.gatech.cs6310.powergrid.domain.Employee;
+import edu.gatech.cs6310.powergrid.domain.EnergySourceType;
 import edu.gatech.cs6310.powergrid.domain.EquipmentIssue;
 import edu.gatech.cs6310.powergrid.domain.IssueStatus;
 import edu.gatech.cs6310.powergrid.domain.LedgerEntry;
@@ -53,7 +54,8 @@ public final class Dtos {
 
     public record CreatePlantRequest(
         String companyShortName, String plantId, LocationDto location,
-        BigDecimal buildCost, BigDecimal generationCostPerKWh
+        BigDecimal buildCost, BigDecimal generationCostPerKWh,
+        EnergySourceType energySource
     ) {}
     public record CreateSubstationRequest(
         String companyShortName, String substationId, LocationDto location,
@@ -68,12 +70,15 @@ public final class Dtos {
     public record PlantView(
         String plantId, String companyShortName, LocationDto location,
         BigDecimal buildCost, BigDecimal generationCostPerKWh,
+        EnergySourceType energySource, boolean renewable, BigDecimal carbonFactorKgPerKWh,
         int maxSubstations, Set<String> substationIds
     ) {
         public static PlantView from(PowerPlant p) {
+            EnergySourceType src = p.getEnergySource();
             return new PlantView(
                 p.getPlantId(), p.getCompanyShortName(), LocationDto.from(p.getLocation()),
                 p.getBuildCost(), p.getGenerationCostPerKWh(),
+                src, src.isRenewable(), src.carbonFactorKgPerKWh(),
                 p.getMaxSubstations(), p.getSubstationIds()
             );
         }

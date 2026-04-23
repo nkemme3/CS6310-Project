@@ -86,4 +86,18 @@ export const Reports = {
     return http.get(`/reports/companies/${shortName}/summary`, { params }).then((r) => r.data);
   },
   ledger: (shortName) => http.get(`/reports/companies/${shortName}/ledger`).then((r) => r.data),
+  sources: (shortName, from, to) => {
+    const params = {};
+    if (from) params.from = from;
+    if (to) params.to = to;
+    return http.get(`/reports/companies/${shortName}/sources`, { params }).then((r) => r.data);
+  },
 };
+
+export const ENERGY_SOURCES = [
+  { value: 'SOLAR',       label: 'Solar (renewable, 0 kg CO2/kWh)' },
+  { value: 'WIND',        label: 'Wind (renewable, 0 kg CO2/kWh)' },
+  { value: 'NUCLEAR',     label: 'Nuclear (low-carbon, 0.005 kg CO2/kWh)' },
+  { value: 'NATURAL_GAS', label: 'Natural Gas (0.45 kg CO2/kWh)' },
+  { value: 'COAL',        label: 'Coal (0.90 kg CO2/kWh)' },
+];

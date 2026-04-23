@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Companies, Infrastructure as Api, extractError } from '../api/client.js';
+import { Companies, Infrastructure as Api, ENERGY_SOURCES, extractError } from '../api/client.js';
 import { useToast } from '../components/Toast.jsx';
 
 export default function Infrastructure() {
@@ -28,6 +28,7 @@ export default function Infrastructure() {
           fields={[
             { name: 'buildCost', label: 'Build cost', type: 'number', step: '0.01' },
             { name: 'generationCostPerKWh', label: 'Generation cost / kWh', type: 'number', step: '0.0001' },
+            { name: 'energySource', label: 'Energy source', type: 'select', options: ENERGY_SOURCES, default: 'NATURAL_GAS' },
           ]}
           onSubmit={Api.createPlant} afterSubmit={refresh} toast={toast} />
         <AssetForm label="Substation" companies={companies}
@@ -61,7 +62,7 @@ export default function Infrastructure() {
       <h3>Inventory</h3>
       <div className="grid">
         <InventoryList title={`Plants (${plants.length})`} items={plants} idKey="plantId"
-          render={(p) => `${p.plantId} · ${p.companyShortName} · (${p.location.x},${p.location.y}) · ${p.substationIds.length}/${p.maxSubstations} subs`} />
+          render={(p) => `${p.plantId} · ${p.companyShortName} · ${p.energySource ?? '?'}${p.renewable ? ' ♻' : ''} · (${p.location.x},${p.location.y}) · ${p.substationIds.length}/${p.maxSubstations} subs`} />
         <InventoryList title={`Substations (${subs.length})`} items={subs} idKey="substationId"
           render={(s) => `${s.substationId} · ${s.companyShortName} · src=${s.sourcePlantId ?? '-'} · ${s.transformerIds.length}/${s.maxTransformers} xfmrs`} />
         <InventoryList title={`Transformers (${trs.length})`} items={trs} idKey="transformerId"
@@ -74,7 +75,7 @@ export default function Infrastructure() {
 function AssetForm({ label, companies, idField, fields, onSubmit, afterSubmit, toast }) {
   const [state, setState] = useState({
     companyShortName: '', [idField]: '', x: '', y: '',
-    ...Object.fromEntries(fields.map((f) => [f.name, ''])),
+    ...Object.fromEntries(fields.map((f) => [f.name, f.default ?? ''])),
   });
   const submit = (e) => {
     e.preventDefault();
@@ -82,7 +83,10 @@ function AssetForm({ label, companies, idField, fields, onSubmit, afterSubmit, t
       companyShortName: state.companyShortName,
       [idField]: state[idField],
       location: { x: Number(state.x), y: Number(state.y) },
-      ...Object.fromEntries(fields.map((f) => [f.name, Number(state[f.name])])),
+      ...Object.fromEntries(fields.map((f) => [
+        f.name,
+        f.type === 'select' ? state[f.name] : Number(state[f.name]),
+      ])),
     };
     onSubmit(payload)
       .then(() => {
@@ -107,7 +111,15 @@ function AssetForm({ label, companies, idField, fields, onSubmit, afterSubmit, t
         <input required type="number" placeholder="y" value={state.y}
           onChange={(e) => setState({ ...state, y: e.target.value })} />
       </div>
-      {fields.map((f) => (
+      {fields.map((f) => f.type === 'select' ? (
+        <label key={f.name} className="stacked">
+          <span className="muted small">{f.label}</span>
+          <select required value={state[f.name]}
+            onChange={(e) => setState({ ...state, [f.name]: e.target.value })}>
+            {f.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </label>
+      ) : (
         <input key={f.name} required type={f.type} step={f.step} placeholder={f.label}
           value={state[f.name]}
           onChange={(e) => setState({ ...state, [f.name]: e.target.value })} />
