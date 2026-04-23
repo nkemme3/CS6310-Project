@@ -1,0 +1,37 @@
+package edu.gatech.cs6310.powergrid.robustness;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+/**
+ * Builds an {@link ObjectMapper} configured for snapshot + journal I/O.
+ * Deliberately distinct from Spring's HTTP ObjectMapper so formatting choices
+ * here (field visibility, Instant as ISO strings) don't bleed into API output.
+ */
+public final class CheckpointMapper {
+
+    private CheckpointMapper() {}
+
+    public static ObjectMapper build() {
+        ObjectMapper om = new ObjectMapper();
+        om.registerModule(new JavaTimeModule());
+        om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        om.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+        om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        om.setVisibility(om.getSerializationConfig().getDefaultVisibilityChecker()
+            .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+            .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+            .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE)
+            .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+            .withCreatorVisibility(JsonAutoDetect.Visibility.ANY));
+        // But we also want @JsonProperty-annotated methods to participate for
+        // Optional-returning getters we converted to `*OrNull()` methods.
+        om.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        return om;
+    }
+}

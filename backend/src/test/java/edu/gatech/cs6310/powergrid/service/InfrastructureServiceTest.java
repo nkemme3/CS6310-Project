@@ -12,6 +12,8 @@ import edu.gatech.cs6310.powergrid.domain.Location;
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
 import edu.gatech.cs6310.powergrid.error.ErrorCode;
 import edu.gatech.cs6310.powergrid.error.SystemError;
+import edu.gatech.cs6310.powergrid.robustness.TransactionJournal;
+import edu.gatech.cs6310.powergrid.testsupport.TestJournal;
 
 class InfrastructureServiceTest {
 
@@ -22,8 +24,9 @@ class InfrastructureServiceTest {
     @BeforeEach
     void setup() {
         pgs = new PowerGridSystem(50, 25, 10);
-        companies = new CompanyService(pgs);
-        infra = new InfrastructureService(pgs);
+        TransactionJournal journal = TestJournal.inTempDir();
+        companies = new CompanyService(pgs, journal);
+        infra = new InfrastructureService(pgs, journal);
         companies.addCompany("Atlanta Power Co", "APC", new BigDecimal("0.12"));
     }
 

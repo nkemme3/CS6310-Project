@@ -1,0 +1,13 @@
+powergrid:
+  robustness:
+    data-dir: ${java.io.tmpdir}/powergrid-test-data/${random.uuid}
+    # Disable scheduled checkpoints during unit/integration tests.
+    checkpoint-interval-ms: 3600000
+  auth:
+    admin-username: admin
+    admin-password: admin123
+    session-ttl-hours: 12
+
+logging:
+  level:
+    edu.gatech.cs6310.powergrid: WARN

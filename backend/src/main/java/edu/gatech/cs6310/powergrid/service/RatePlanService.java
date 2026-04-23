@@ -14,15 +14,19 @@ import edu.gatech.cs6310.powergrid.domain.PowerCompany;
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
 import edu.gatech.cs6310.powergrid.domain.RatePlan;
 import edu.gatech.cs6310.powergrid.error.SystemError;
+import edu.gatech.cs6310.powergrid.robustness.JournalCommand;
 import edu.gatech.cs6310.powergrid.robustness.ProofService;
+import edu.gatech.cs6310.powergrid.robustness.TransactionJournal;
 
 @Service
 public class RatePlanService {
 
     private final PowerGridSystem pgs;
+    private final TransactionJournal journal;
 
-    public RatePlanService(PowerGridSystem pgs) {
+    public RatePlanService(PowerGridSystem pgs, TransactionJournal journal) {
         this.pgs = pgs;
+        this.journal = journal;
     }
 
     public RatePlan addRatePlan(String planId, String companyShortName, BigDecimal ratePerKWh,
@@ -39,22 +43,24 @@ public class RatePlanService {
         if (effectiveEnd.isBefore(effectiveStart)) {
             throw SystemError.invalidCommand("effectiveEnd must be on or after effectiveStart.", "effectiveEnd");
         }
-        PowerCompany company = ProofService.validateExists("Power company", companyShortName, pgs.companies());
-        ProofService.validateAvailableId("Rate plan", planId, pgs.ratePlans());
-        if (accountNumber != null) {
-            Customer c = ProofService.validateExists("Customer", accountNumber, pgs.customers());
-            if (!c.getCompanyShortName().equals(companyShortName)) {
-                throw SystemError.invalidState("Rate plan customer must belong to company '" + companyShortName + "'.");
+        synchronized (pgs.lock()) {
+            ProofService.validateExists("Power company", companyShortName, pgs.companies());
+            ProofService.validateAvailableId("Rate plan", planId, pgs.ratePlans());
+            if (accountNumber != null) {
+                Customer c = ProofService.validateExists("Customer", accountNumber, pgs.customers());
+                if (!c.getCompanyShortName().equals(companyShortName)) {
+                    throw SystemError.invalidState("Rate plan customer must belong to company '" + companyShortName + "'.");
+                }
+                if (c.getCustomerType() != customerType) {
+                    throw SystemError.invalidState("Rate plan customerType must match the customer's type.");
+                }
             }
-            if (c.getCustomerType() != customerType) {
-                throw SystemError.invalidState("Rate plan customerType must match the customer's type.");
-            }
+            JournalCommand.AddRatePlanCmd cmd = new JournalCommand.AddRatePlanCmd(
+                planId, companyShortName, ratePerKWh, customerType, accountNumber, effectiveStart, effectiveEnd);
+            journal.append(cmd);
+            cmd.apply(pgs);
+            return pgs.ratePlans().get(planId);
         }
-        RatePlan plan = new RatePlan(planId, companyShortName, ratePerKWh, customerType, accountNumber,
-            effectiveStart, effectiveEnd);
-        pgs.ratePlans().put(planId, plan);
-        company.getRatePlanIds().add(planId);
-        return plan;
     }
 
     /**

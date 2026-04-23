@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class EquipmentIssue {
 
     private final long issueId;
@@ -18,8 +22,16 @@ public class EquipmentIssue {
     private Instant resolvedAt;
     private BigDecimal resolutionCost;
 
-    public EquipmentIssue(long issueId, String companyShortName, AssetType assetType, String assetId,
-                          BigDecimal hoursRequired, BigDecimal materialsCost, Instant reportedAt) {
+    @JsonCreator
+    public EquipmentIssue(
+        @JsonProperty("issueId") long issueId,
+        @JsonProperty("companyShortName") String companyShortName,
+        @JsonProperty("assetType") AssetType assetType,
+        @JsonProperty("assetId") String assetId,
+        @JsonProperty("hoursRequired") BigDecimal hoursRequired,
+        @JsonProperty("materialsCost") BigDecimal materialsCost,
+        @JsonProperty("reportedAt") Instant reportedAt
+    ) {
         this.issueId = issueId;
         this.companyShortName = companyShortName;
         this.assetType = assetType;
@@ -38,9 +50,17 @@ public class EquipmentIssue {
     public BigDecimal getHoursRequired() { return hoursRequired; }
     public BigDecimal getMaterialsCost() { return materialsCost; }
     public IssueStatus getStatus() { return status; }
+    public void setStatus(IssueStatus status) { this.status = status; }
+    @JsonIgnore
     public Optional<String> getAssignedEmployeeId() { return Optional.ofNullable(assignedEmployeeId); }
+    @JsonIgnore
     public Optional<Instant> getResolvedAt() { return Optional.ofNullable(resolvedAt); }
+    @JsonIgnore
     public Optional<BigDecimal> getResolutionCost() { return Optional.ofNullable(resolutionCost); }
+
+    public void setAssignedEmployeeId(String id) { this.assignedEmployeeId = id; }
+    public void setResolvedAt(Instant resolvedAt) { this.resolvedAt = resolvedAt; }
+    public void setResolutionCost(BigDecimal cost) { this.resolutionCost = cost; }
 
     public void assign(String employeeId) {
         this.assignedEmployeeId = employeeId;

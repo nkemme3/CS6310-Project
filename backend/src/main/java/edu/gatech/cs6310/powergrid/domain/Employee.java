@@ -3,6 +3,9 @@ package edu.gatech.cs6310.powergrid.domain;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Employee {
 
     private final String employeeId;
@@ -11,8 +14,14 @@ public class Employee {
     private LocalDate startDate;
     private BigDecimal hourlyWage;
 
-    public Employee(String employeeId, String companyShortName, String name,
-                    LocalDate startDate, BigDecimal hourlyWage) {
+    @JsonCreator
+    public Employee(
+        @JsonProperty("employeeId") String employeeId,
+        @JsonProperty("companyShortName") String companyShortName,
+        @JsonProperty("name") String name,
+        @JsonProperty("startDate") LocalDate startDate,
+        @JsonProperty("hourlyWage") BigDecimal hourlyWage
+    ) {
         this.employeeId = employeeId;
         this.companyShortName = companyShortName;
         this.name = name;

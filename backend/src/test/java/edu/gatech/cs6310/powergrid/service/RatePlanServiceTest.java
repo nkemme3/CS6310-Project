@@ -12,6 +12,8 @@ import edu.gatech.cs6310.powergrid.domain.Customer;
 import edu.gatech.cs6310.powergrid.domain.CustomerType;
 import edu.gatech.cs6310.powergrid.domain.Location;
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
+import edu.gatech.cs6310.powergrid.robustness.TransactionJournal;
+import edu.gatech.cs6310.powergrid.testsupport.TestJournal;
 
 class RatePlanServiceTest {
 
@@ -23,9 +25,10 @@ class RatePlanServiceTest {
     @BeforeEach
     void setup() {
         pgs = new PowerGridSystem(50, 25, 10);
-        companies = new CompanyService(pgs);
-        customers = new CustomerService(pgs);
-        plans = new RatePlanService(pgs);
+        TransactionJournal journal = TestJournal.inTempDir();
+        companies = new CompanyService(pgs, journal);
+        customers = new CustomerService(pgs, journal);
+        plans = new RatePlanService(pgs, journal);
         companies.addCompany("Atlanta Power Co", "APC", new BigDecimal("0.20"));
     }
 

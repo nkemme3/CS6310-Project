@@ -5,6 +5,10 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Transformer {
 
     public static final int DEFAULT_MAX_CUSTOMERS = 5;
@@ -15,11 +19,18 @@ public class Transformer {
     private BigDecimal installCost;
     private BigDecimal maintenanceCostPerCycle;
     private int maxCustomers;
+    @JsonProperty("sourceSubstationId")
     private String sourceSubstationId;
     private final Set<Long> customerAccountNumbers = new LinkedHashSet<>();
 
-    public Transformer(String transformerId, String companyShortName, Location location,
-                       BigDecimal installCost, BigDecimal maintenanceCostPerCycle) {
+    @JsonCreator
+    public Transformer(
+        @JsonProperty("transformerId") String transformerId,
+        @JsonProperty("companyShortName") String companyShortName,
+        @JsonProperty("location") Location location,
+        @JsonProperty("installCost") BigDecimal installCost,
+        @JsonProperty("maintenanceCostPerCycle") BigDecimal maintenanceCostPerCycle
+    ) {
         this.transformerId = transformerId;
         this.companyShortName = companyShortName;
         this.location = location;
@@ -37,6 +48,7 @@ public class Transformer {
     public void setMaintenanceCostPerCycle(BigDecimal v) { this.maintenanceCostPerCycle = v; }
     public int getMaxCustomers() { return maxCustomers; }
     public void setMaxCustomers(int v) { this.maxCustomers = v; }
+    @JsonIgnore
     public Optional<String> getSourceSubstationId() { return Optional.ofNullable(sourceSubstationId); }
     public void setSourceSubstationId(String substationId) { this.sourceSubstationId = substationId; }
     public Set<Long> getCustomerAccountNumbers() { return customerAccountNumbers; }

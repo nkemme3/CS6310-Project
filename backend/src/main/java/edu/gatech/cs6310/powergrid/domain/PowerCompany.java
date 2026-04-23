@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PowerCompany {
 
     private final String longName;
@@ -17,7 +20,12 @@ public class PowerCompany {
     private final Set<String> employeeIds = new LinkedHashSet<>();
     private final Set<String> ratePlanIds = new LinkedHashSet<>();
 
-    public PowerCompany(String longName, String shortName, BigDecimal standardRate) {
+    @JsonCreator
+    public PowerCompany(
+        @JsonProperty("longName") String longName,
+        @JsonProperty("shortName") String shortName,
+        @JsonProperty("standardRate") BigDecimal standardRate
+    ) {
         this.longName = longName;
         this.shortName = shortName;
         this.standardRate = standardRate;

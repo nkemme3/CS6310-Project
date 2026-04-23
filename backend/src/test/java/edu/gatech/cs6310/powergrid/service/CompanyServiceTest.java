@@ -9,13 +9,18 @@ import org.junit.jupiter.api.Test;
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
 import edu.gatech.cs6310.powergrid.error.ErrorCode;
 import edu.gatech.cs6310.powergrid.error.SystemError;
+import edu.gatech.cs6310.powergrid.testsupport.TestJournal;
 
 class CompanyServiceTest {
 
+    private CompanyService svc() {
+        PowerGridSystem pgs = new PowerGridSystem(50, 25, 10);
+        return new CompanyService(pgs, TestJournal.inTempDir());
+    }
+
     @Test
     void duplicateShortNameRejected() {
-        PowerGridSystem pgs = new PowerGridSystem(50, 25, 10);
-        CompanyService svc = new CompanyService(pgs);
+        CompanyService svc = svc();
         svc.addCompany("Atlanta Power Co", "APC", new BigDecimal("0.12"));
         assertThatThrownBy(() -> svc.addCompany("Another", "APC", new BigDecimal("0.15")))
             .isInstanceOf(SystemError.class)
@@ -25,8 +30,7 @@ class CompanyServiceTest {
 
     @Test
     void blankShortNameRejected() {
-        PowerGridSystem pgs = new PowerGridSystem(50, 25, 10);
-        CompanyService svc = new CompanyService(pgs);
+        CompanyService svc = svc();
         assertThatThrownBy(() -> svc.addCompany("Something", "   ", new BigDecimal("0.12")))
             .isInstanceOf(SystemError.class)
             .extracting(e -> ((SystemError) e).code())
@@ -35,8 +39,7 @@ class CompanyServiceTest {
 
     @Test
     void nonPositiveRateRejected() {
-        PowerGridSystem pgs = new PowerGridSystem(50, 25, 10);
-        CompanyService svc = new CompanyService(pgs);
+        CompanyService svc = svc();
         assertThatThrownBy(() -> svc.addCompany("Atlanta", "APC", BigDecimal.ZERO))
             .isInstanceOf(SystemError.class)
             .extracting(e -> ((SystemError) e).code())

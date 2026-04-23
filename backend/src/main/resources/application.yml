@@ -11,11 +11,15 @@ spring:
 powergrid:
   robustness:
     data-dir: ./data
-    checkpoint-interval-seconds: 60
+    checkpoint-interval-ms: 60000
   distances:
     max-plant-substation: 50
     max-substation-transformer: 25
     max-transformer-customer: 10
+  auth:
+    admin-username: admin
+    admin-password: admin123
+    session-ttl-hours: 12
 
 logging:
   level:

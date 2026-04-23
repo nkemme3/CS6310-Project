@@ -15,6 +15,8 @@ import edu.gatech.cs6310.powergrid.domain.LedgerEntry;
 import edu.gatech.cs6310.powergrid.domain.LedgerEntryType;
 import edu.gatech.cs6310.powergrid.domain.Location;
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
+import edu.gatech.cs6310.powergrid.robustness.TransactionJournal;
+import edu.gatech.cs6310.powergrid.testsupport.TestJournal;
 
 class BillingServiceTest {
 
@@ -29,12 +31,13 @@ class BillingServiceTest {
     @BeforeEach
     void setup() {
         pgs = new PowerGridSystem(50, 25, 10);
-        companies = new CompanyService(pgs);
-        infra = new InfrastructureService(pgs);
-        customers = new CustomerService(pgs);
-        plans = new RatePlanService(pgs);
-        usage = new UsageService(pgs);
-        billing = new BillingService(pgs, plans);
+        TransactionJournal journal = TestJournal.inTempDir();
+        companies = new CompanyService(pgs, journal);
+        infra = new InfrastructureService(pgs, journal);
+        customers = new CustomerService(pgs, journal);
+        plans = new RatePlanService(pgs, journal);
+        usage = new UsageService(pgs, journal);
+        billing = new BillingService(pgs, plans, journal);
 
         companies.addCompany("Atlanta Power Co", "APC", new BigDecimal("0.20"));
         infra.addPlant("APC", "P1", new Location(0, 0), new BigDecimal("10000"), new BigDecimal("0.05"));

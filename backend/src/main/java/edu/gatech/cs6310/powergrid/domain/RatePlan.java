@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RatePlan {
 
     private final String planId;
@@ -14,9 +18,16 @@ public class RatePlan {
     private final LocalDate effectiveStart;
     private final LocalDate effectiveEnd;
 
-    public RatePlan(String planId, String companyShortName, BigDecimal ratePerKWh,
-                    CustomerType customerType, Long accountNumber,
-                    LocalDate effectiveStart, LocalDate effectiveEnd) {
+    @JsonCreator
+    public RatePlan(
+        @JsonProperty("planId") String planId,
+        @JsonProperty("companyShortName") String companyShortName,
+        @JsonProperty("ratePerKWh") BigDecimal ratePerKWh,
+        @JsonProperty("customerType") CustomerType customerType,
+        @JsonProperty("accountNumber") Long accountNumber,
+        @JsonProperty("effectiveStart") LocalDate effectiveStart,
+        @JsonProperty("effectiveEnd") LocalDate effectiveEnd
+    ) {
         this.planId = planId;
         this.companyShortName = companyShortName;
         this.ratePerKWh = ratePerKWh;
@@ -30,6 +41,7 @@ public class RatePlan {
     public String getCompanyShortName() { return companyShortName; }
     public BigDecimal getRatePerKWh() { return ratePerKWh; }
     public CustomerType getCustomerType() { return customerType; }
+    @JsonIgnore
     public Optional<Long> getAccountNumber() { return Optional.ofNullable(accountNumber); }
     public LocalDate getEffectiveStart() { return effectiveStart; }
     public LocalDate getEffectiveEnd() { return effectiveEnd; }

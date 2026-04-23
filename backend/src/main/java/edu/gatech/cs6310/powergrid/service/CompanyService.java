@@ -7,32 +7,43 @@ import org.springframework.stereotype.Service;
 
 import edu.gatech.cs6310.powergrid.domain.PowerCompany;
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
+import edu.gatech.cs6310.powergrid.robustness.JournalCommand;
 import edu.gatech.cs6310.powergrid.robustness.ProofService;
+import edu.gatech.cs6310.powergrid.robustness.TransactionJournal;
 
 @Service
 public class CompanyService {
 
     private final PowerGridSystem pgs;
+    private final TransactionJournal journal;
 
-    public CompanyService(PowerGridSystem pgs) {
+    public CompanyService(PowerGridSystem pgs, TransactionJournal journal) {
         this.pgs = pgs;
+        this.journal = journal;
     }
 
     public PowerCompany addCompany(String longName, String shortName, BigDecimal standardRate) {
         ProofService.validateNotBlank("longName", longName);
         ProofService.validateNotBlank("shortName", shortName);
         ProofService.validatePositive("standardRate", standardRate);
-        ProofService.validateUniqueShortName(shortName, pgs.companies().keySet());
-        PowerCompany c = new PowerCompany(longName, shortName, standardRate);
-        pgs.companies().put(shortName, c);
-        return c;
+        synchronized (pgs.lock()) {
+            ProofService.validateUniqueShortName(shortName, pgs.companies().keySet());
+            JournalCommand.AddCompanyCmd cmd = new JournalCommand.AddCompanyCmd(longName, shortName, standardRate);
+            journal.append(cmd);
+            cmd.apply(pgs);
+            return pgs.companies().get(shortName);
+        }
     }
 
     public PowerCompany updateStandardRate(String shortName, BigDecimal newRate) {
         ProofService.validatePositive("standardRate", newRate);
-        PowerCompany c = ProofService.validateExists("Power company", shortName, pgs.companies());
-        c.setStandardRate(newRate);
-        return c;
+        synchronized (pgs.lock()) {
+            PowerCompany c = ProofService.validateExists("Power company", shortName, pgs.companies());
+            JournalCommand.UpdateStandardRateCmd cmd = new JournalCommand.UpdateStandardRateCmd(shortName, newRate);
+            journal.append(cmd);
+            cmd.apply(pgs);
+            return c;
+        }
     }
 
     public Collection<PowerCompany> list() {

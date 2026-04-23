@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PowerPlant {
 
     public static final int DEFAULT_MAX_SUBSTATIONS = 20;
@@ -16,8 +19,14 @@ public class PowerPlant {
     private int maxSubstations;
     private final Set<String> substationIds = new LinkedHashSet<>();
 
-    public PowerPlant(String plantId, String companyShortName, Location location,
-                      BigDecimal buildCost, BigDecimal generationCostPerKWh) {
+    @JsonCreator
+    public PowerPlant(
+        @JsonProperty("plantId") String plantId,
+        @JsonProperty("companyShortName") String companyShortName,
+        @JsonProperty("location") Location location,
+        @JsonProperty("buildCost") BigDecimal buildCost,
+        @JsonProperty("generationCostPerKWh") BigDecimal generationCostPerKWh
+    ) {
         this.plantId = plantId;
         this.companyShortName = companyShortName;
         this.location = location;
