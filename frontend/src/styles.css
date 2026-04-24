@@ -134,3 +134,88 @@ input, select, textarea {
 .toast-error { border-color: #c0392b; }
 .toast-success { border-color: #27ae60; }
 .toast .remediation { margin-top: 0.3rem; color: #8a93a6; font-size: 0.85rem; }
+
+/* ---- Auth: login screen + sidebar user panel ---- */
+.login-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 30% 20%, #1a2440 0%, #0f1115 60%);
+  padding: 2rem;
+}
+.login-card {
+  background: #12151c;
+  border: 1px solid #222835;
+  border-radius: 10px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
+.login-card h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.02em; }
+.login-card .subtitle { margin: 0 0 0.5rem; }
+.login-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: #8a93a6;
+}
+.login-card input {
+  padding: 0.55rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid #2a3142;
+  background: #0f1115;
+  color: #e8ebf0;
+  font-size: 0.95rem;
+}
+.login-card button {
+  margin-top: 0.3rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #3355aa;
+  background: #223258;
+  color: #f5f7ff;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.login-card button:disabled { opacity: 0.6; cursor: not-allowed; }
+.login-card .hint { margin: 0.3rem 0 0; color: #8a93a6; font-size: 0.8rem; text-align: center; }
+.login-card .hint code { background: #1a1f2b; padding: 0.05rem 0.3rem; border-radius: 3px; }
+.login-error {
+  background: #2a1516;
+  border: 1px solid #c0392b;
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+}
+.login-error strong { display: block; color: #ff8a80; }
+.login-error .remediation { margin-top: 0.25rem; color: #d0a8a8; font-size: 0.8rem; }
+
+.loading { padding: 2rem; color: #8a93a6; }
+
+.nav-user {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #222835;
+  position: absolute;
+  bottom: 1.25rem;
+  left: 1rem;
+  right: 1rem;
+}
+.nav-user-name { font-weight: 600; color: #f5f7ff; font-size: 0.95rem; }
+.nav-user-roles { color: #8a93a6; font-size: 0.75rem; margin-bottom: 0.5rem; }
+.nav-logout {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #2a3142;
+  background: #1a1f2b;
+  color: #cbd3e1;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.nav-logout:hover { background: #223258; border-color: #3355aa; }

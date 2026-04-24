@@ -1,11 +1,41 @@
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+const TOKEN_KEY = 'powergrid.token';
+
+export const tokenStore = {
+  get: () => localStorage.getItem(TOKEN_KEY),
+  set: (t) => localStorage.setItem(TOKEN_KEY, t),
+  clear: () => localStorage.removeItem(TOKEN_KEY),
+};
 
 export const http = axios.create({
   baseURL,
   headers: { 'Content-Type': 'application/json' },
 });
+
+// Attach bearer token on every outgoing request.
+http.interceptors.request.use((config) => {
+  const token = tokenStore.get();
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// On 401, clear the token and bounce to login. The AuthContext listens for
+// storage changes via a manual event so it can react in the same tab.
+http.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err?.response?.status === 401 && !err.config?.url?.includes('/auth/login')) {
+      tokenStore.clear();
+      window.dispatchEvent(new CustomEvent('powergrid:auth-expired'));
+    }
+    return Promise.reject(err);
+  }
+);
 
 export function extractError(err) {
   const data = err?.response?.data;
@@ -24,6 +54,15 @@ export async function getHealth() {
   const { data } = await http.get('/health');
   return data;
 }
+
+export const Auth = {
+  login: (username, password) =>
+    http.post('/auth/login', { username, password }).then((r) => r.data),
+  logout: () => http.post('/auth/logout').then((r) => r.data),
+  me: () => http.get('/auth/me').then((r) => r.data),
+  listUsers: () => http.get('/auth/users').then((r) => r.data),
+  createUser: (payload) => http.post('/auth/users', payload).then((r) => r.data),
+};
 
 export const Companies = {
   list: () => http.get('/companies').then((r) => r.data),

@@ -3,6 +3,7 @@ package edu.gatech.cs6310.powergrid.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ public class InfrastructureController {
     }
 
     @PostMapping("/plants")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public ResponseEntity<PlantView> createPlant(@RequestBody CreatePlantRequest req) {
         PlantView v = PlantView.from(service.addPlant(
             req.companyShortName(), req.plantId(),
@@ -49,6 +51,7 @@ public class InfrastructureController {
     }
 
     @PostMapping("/substations")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public ResponseEntity<SubstationView> createSubstation(@RequestBody CreateSubstationRequest req) {
         SubstationView v = SubstationView.from(service.addSubstation(
             req.companyShortName(), req.substationId(),
@@ -64,6 +67,7 @@ public class InfrastructureController {
     }
 
     @PostMapping("/transformers")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public ResponseEntity<TransformerView> createTransformer(@RequestBody CreateTransformerRequest req) {
         TransformerView v = TransformerView.from(service.addTransformer(
             req.companyShortName(), req.transformerId(),
@@ -74,12 +78,14 @@ public class InfrastructureController {
     }
 
     @PostMapping("/connections/plant-substation")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public ResponseEntity<Void> connectPlantSubstation(@RequestBody ConnectRequest req) {
         service.connectPlantToSubstation(req.sourceId(), req.targetId());
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/connections/substation-transformer")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public ResponseEntity<Void> connectSubstationTransformer(@RequestBody ConnectRequest req) {
         service.connectSubstationToTransformer(req.sourceId(), req.targetId());
         return ResponseEntity.noContent().build();

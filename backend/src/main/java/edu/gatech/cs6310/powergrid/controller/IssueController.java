@@ -3,6 +3,7 @@ package edu.gatech.cs6310.powergrid.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ public class IssueController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR','FIELD')")
     public ResponseEntity<IssueView> report(@RequestBody ReportIssueRequest req) {
         IssueView v = IssueView.from(service.reportIssue(
             req.companyShortName(), req.assetType(), req.assetId(),
@@ -45,11 +47,13 @@ public class IssueController {
     }
 
     @PostMapping("/{id}/assign")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public IssueView assign(@PathVariable long id, @RequestBody AssignIssueRequest req) {
         return IssueView.from(service.assignIssue(id, req.employeeId()));
     }
 
     @PostMapping("/{id}/resolve")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR','FIELD')")
     public IssueView resolve(@PathVariable long id) {
         return IssueView.from(service.resolveIssue(id));
     }

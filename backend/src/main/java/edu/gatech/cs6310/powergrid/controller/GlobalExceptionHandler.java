@@ -3,6 +3,8 @@ package edu.gatech.cs6310.powergrid.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +33,28 @@ public class GlobalExceptionHandler {
         SystemError wrapped = SystemError.invalidCommand(
             ex.getMessage() == null ? "Request could not be parsed." : ex.getMessage(), null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiError.from(wrapped));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
+        SystemError wrapped = new SystemError(
+            ErrorCode.FORBIDDEN,
+            "You do not have permission to perform this action.",
+            null,
+            "Ask an administrator for the required role."
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiError.from(wrapped));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthenticationException(AuthenticationException ex) {
+        SystemError wrapped = new SystemError(
+            ErrorCode.UNAUTHORIZED,
+            ex.getMessage() == null ? "Authentication is required." : ex.getMessage(),
+            null,
+            "POST /api/auth/login to obtain a bearer token."
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.from(wrapped));
     }
 
     @ExceptionHandler(Exception.class)

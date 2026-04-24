@@ -1,6 +1,7 @@
 package edu.gatech.cs6310.powergrid.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ public class BillingController {
     }
 
     @PostMapping("/usage")
+    @PreAuthorize("hasAnyRole('ADMIN','BILLING','OPERATOR')")
     public ResponseEntity<LedgerEntryView> recordUsage(@RequestBody RecordUsageRequest req) {
         LedgerEntryView v = LedgerEntryView.from(usage.recordUsage(
             req.accountNumber(), req.periodStart(), req.periodEnd(), req.kWh()));
@@ -34,6 +36,7 @@ public class BillingController {
     }
 
     @PostMapping("/production")
+    @PreAuthorize("hasAnyRole('ADMIN','BILLING','OPERATOR')")
     public ResponseEntity<LedgerEntryView> recordProduction(@RequestBody RecordProductionRequest req) {
         LedgerEntryView v = LedgerEntryView.from(usage.recordProduction(
             req.plantId(), req.periodStart(), req.periodEnd(), req.kWh()));
@@ -41,6 +44,7 @@ public class BillingController {
     }
 
     @PostMapping("/run")
+    @PreAuthorize("hasAnyRole('ADMIN','BILLING')")
     public BillingRunResponse run(@RequestBody RunBillingRequest req) {
         return BillingRunResponse.of(billing.runBillingCycle(
             req.companyShortName(), req.periodStart(), req.periodEnd()));

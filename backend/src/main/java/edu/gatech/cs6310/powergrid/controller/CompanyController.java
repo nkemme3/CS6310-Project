@@ -3,6 +3,7 @@ package edu.gatech.cs6310.powergrid.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,12 +38,14 @@ public class CompanyController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public ResponseEntity<CompanyView> create(@RequestBody CreateCompanyRequest req) {
         CompanyView v = CompanyView.from(service.addCompany(req.longName(), req.shortName(), req.standardRate()));
         return ResponseEntity.status(201).body(v);
     }
 
     @PutMapping("/{shortName}/standard-rate")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR','BILLING')")
     public CompanyView updateRate(@PathVariable String shortName, @RequestBody UpdateStandardRateRequest req) {
         return CompanyView.from(service.updateStandardRate(shortName, req.standardRate()));
     }

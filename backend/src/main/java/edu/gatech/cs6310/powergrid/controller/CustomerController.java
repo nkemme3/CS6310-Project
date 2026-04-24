@@ -3,6 +3,7 @@ package edu.gatech.cs6310.powergrid.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ public class CustomerController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public ResponseEntity<CustomerView> create(@RequestBody CreateCustomerRequest req) {
         CustomerView v = CustomerView.from(service.createCustomer(
             req.companyShortName(), req.name(), req.customerType(),
@@ -45,6 +47,7 @@ public class CustomerController {
     }
 
     @PostMapping("/connect")
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR')")
     public ResponseEntity<Void> connect(@RequestBody ConnectCustomerRequest req) {
         service.connectCustomerToTransformer(req.accountNumber(), req.transformerId());
         return ResponseEntity.noContent().build();
