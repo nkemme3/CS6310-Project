@@ -16,11 +16,6 @@ import edu.gatech.cs6310.powergrid.service.ReportingService.SourceBreakdown;
 import edu.gatech.cs6310.powergrid.service.ReportingService.SourceBreakdownRow;
 import edu.gatech.cs6310.powergrid.testsupport.TestJournal;
 
-/**
- * Stand up a handful of plants across different energy sources, log production
- * against each, and confirm the reporting breakdown attributes kWh and carbon
- * to the right source.
- */
 class EnergySourceReportingTest {
 
     private PowerGridSystem pgs;
@@ -55,7 +50,7 @@ class EnergySourceReportingTest {
         SourceBreakdown b = reports.sourceBreakdown("APC", start, end);
         assertThat(b.totalKWh()).isEqualByComparingTo("3000");
         assertThat(b.renewableKWh()).isEqualByComparingTo("1000");
-        // 1000 kWh * 0.00 + 2000 kWh * 0.90 = 1800 kg
+        // 1000 * 0.00 + 2000 * 0.90 = 1800
         assertThat(b.totalEstimatedCarbonKg()).isEqualByComparingTo("1800.00");
 
         SourceBreakdownRow solar = b.rows().stream()

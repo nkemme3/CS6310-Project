@@ -1,9 +1,5 @@
 package edu.gatech.cs6310.powergrid.error;
 
-/**
- * Structured exception carrying an ErrorCode and an optional remediation hint.
- * Controllers translate this into an ApiError response via GlobalExceptionHandler.
- */
 public class SystemError extends RuntimeException {
 
     private final ErrorCode code;

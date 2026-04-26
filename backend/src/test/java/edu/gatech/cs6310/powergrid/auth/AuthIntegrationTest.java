@@ -18,11 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-/**
- * End-to-end auth sanity: /api/auth/login returns a bearer token, anonymous
- * writes are rejected with 401, a token from a VIEWER can read but not write,
- * and ADMIN can write.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 class AuthIntegrationTest {
@@ -33,7 +28,6 @@ class AuthIntegrationTest {
 
     @BeforeEach
     void seed() {
-        // AdminSeeder runs on ApplicationReadyEvent — if it didn't run in the test context, force it.
         if (users.findUser("admin").isEmpty()) {
             users.seedIfAbsent("admin", "admin123", EnumSet.of(Role.ADMIN));
         }

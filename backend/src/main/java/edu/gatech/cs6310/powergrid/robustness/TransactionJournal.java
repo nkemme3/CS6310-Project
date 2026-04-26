@@ -17,11 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Append-only write-ahead log. Each line is {@code <json>\t<crc32-hex>} so a
- * torn tail (process crash in the middle of a write) is detectable and
- * skippable during replay.
- */
 @Component
 public class TransactionJournal {
 
@@ -51,7 +46,7 @@ public class TransactionJournal {
                 String line = json + "\t" + Long.toHexString(crc.getValue()) + "\n";
                 Files.writeString(journalFile, line, StandardCharsets.UTF_8,
                     StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                // fsync to ensure the entry is durable before the in-memory mutation is visible
+                // fsync
                 try (RandomAccessFile raf = new RandomAccessFile(journalFile.toFile(), "rw")) {
                     raf.getFD().sync();
                 }
@@ -61,7 +56,6 @@ public class TransactionJournal {
         }
     }
 
-    /** Read and parse all valid entries from the journal. Corrupt/truncated tail entries are skipped. */
     public List<JournalCommand> replay() {
         List<JournalCommand> out = new ArrayList<>();
         if (!Files.exists(journalFile)) return out;
@@ -105,7 +99,6 @@ public class TransactionJournal {
         return out;
     }
 
-    /** Clear the journal after a successful checkpoint. */
     public void truncate() {
         synchronized (writeLock) {
             try {

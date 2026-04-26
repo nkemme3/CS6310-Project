@@ -58,7 +58,6 @@ public class PowerPlant {
     public void attachSubstation(String substationId) { substationIds.add(substationId); }
     public void detachSubstation(String substationId) { substationIds.remove(substationId); }
 
-    /** Carbon emitted if this plant produced the given kWh, using the source's carbon factor. */
     public BigDecimal carbonFor(BigDecimal kWh) {
         if (kWh == null) return BigDecimal.ZERO;
         return energySource.carbonFactorKgPerKWh().multiply(kWh);

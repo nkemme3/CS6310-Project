@@ -14,7 +14,6 @@ export const http = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach bearer token on every outgoing request.
 http.interceptors.request.use((config) => {
   const token = tokenStore.get();
   if (token) {
@@ -24,8 +23,6 @@ http.interceptors.request.use((config) => {
   return config;
 });
 
-// On 401, clear the token and bounce to login. The AuthContext listens for
-// storage changes via a manual event so it can react in the same tab.
 http.interceptors.response.use(
   (res) => res,
   (err) => {

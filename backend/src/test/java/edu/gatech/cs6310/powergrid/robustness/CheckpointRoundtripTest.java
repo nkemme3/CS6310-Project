@@ -19,10 +19,6 @@ import edu.gatech.cs6310.powergrid.service.CustomerService;
 import edu.gatech.cs6310.powergrid.service.InfrastructureService;
 import edu.gatech.cs6310.powergrid.service.RatePlanService;
 
-/**
- * End-to-end exercise of the Robustness mod: mutate state through services,
- * write a checkpoint, reset, restore, and confirm every field survives.
- */
 class CheckpointRoundtripTest {
 
     @Test
@@ -63,7 +59,6 @@ class CheckpointRoundtripTest {
         assertThat(rehydrated.customers().get(acct).getName()).isEqualTo("Alice");
         assertThat(rehydrated.customers().get(acct).getConnectedTransformerId()).contains("T1");
         assertThat(rehydrated.ratePlans().get("VIP").getRatePerKWh()).isEqualByComparingTo("0.08");
-        // Sequence counters must advance past any IDs we persisted so new IDs don't collide.
         assertThat(rehydrated.nextAccountNumber()).isGreaterThan(acct);
     }
 }

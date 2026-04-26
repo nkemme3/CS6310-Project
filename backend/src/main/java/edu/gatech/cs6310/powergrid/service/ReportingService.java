@@ -87,11 +87,6 @@ public class ReportingService {
         List<SourceBreakdownRow> rows
     ) {}
 
-    /**
-     * Break a company's production down by the energy source of the plant that
-     * reported each PRODUCTION ledger entry. Useful for a "generation mix"
-     * dashboard and for crude carbon accounting.
-     */
     public SourceBreakdown sourceBreakdown(String companyShortName, LocalDate periodStart, LocalDate periodEnd) {
         ProofService.validateExists("Power company", companyShortName, pgs.companies());
 

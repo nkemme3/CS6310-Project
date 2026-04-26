@@ -8,11 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-/**
- * Builds an {@link ObjectMapper} configured for snapshot + journal I/O.
- * Deliberately distinct from Spring's HTTP ObjectMapper so formatting choices
- * here (field visibility, Instant as ISO strings) don't bleed into API output.
- */
 public final class CheckpointMapper {
 
     private CheckpointMapper() {}
@@ -29,8 +24,6 @@ public final class CheckpointMapper {
             .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE)
             .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
             .withCreatorVisibility(JsonAutoDetect.Visibility.ANY));
-        // But we also want @JsonProperty-annotated methods to participate for
-        // Optional-returning getters we converted to `*OrNull()` methods.
         om.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         return om;
     }

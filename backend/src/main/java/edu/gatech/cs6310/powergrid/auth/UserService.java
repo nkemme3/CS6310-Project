@@ -20,10 +20,6 @@ import edu.gatech.cs6310.powergrid.error.SystemError;
 import edu.gatech.cs6310.powergrid.robustness.JournalCommand;
 import edu.gatech.cs6310.powergrid.robustness.TransactionJournal;
 
-/**
- * User store + session manager. Users live in the journaled grid so they
- * survive restart; sessions are ephemeral and held in a concurrent map.
- */
 @Service
 public class UserService {
 
@@ -52,7 +48,6 @@ public class UserService {
         return pgs.users().values();
     }
 
-    /** Creates a user with the given roles. Returns the persisted record (without password hash leaked). */
     public User createUser(String username, String plaintextPassword, Set<Role> roles) {
         if (username == null || username.isBlank()) {
             throw new SystemError(ErrorCode.INVALID_COMMAND, "username is required", "username", null);
@@ -75,7 +70,6 @@ public class UserService {
         }
     }
 
-    /** Admin-only fast path used by seeding that does not touch the journal. */
     public void seedIfAbsent(String username, String plaintextPassword, Set<Role> roles) {
         if (pgs.users().containsKey(username)) return;
         createUser(username, plaintextPassword, roles);
@@ -98,7 +92,6 @@ public class UserService {
         if (token != null) sessions.remove(token);
     }
 
-    /** Returns the session for the given token if present and not expired. */
     public Optional<Session> validate(String token) {
         if (token == null) return Optional.empty();
         Session s = sessions.get(token);

@@ -7,12 +7,6 @@ import java.nio.file.Path;
 import edu.gatech.cs6310.powergrid.robustness.CheckpointManager;
 import edu.gatech.cs6310.powergrid.robustness.TransactionJournal;
 
-/**
- * Convenience factory for building a {@link TransactionJournal} rooted in a
- * fresh temp directory. Used by service-layer unit tests that don't want to
- * stand up a full Spring context but do need a real journal to satisfy
- * constructor dependencies.
- */
 public final class TestJournal {
 
     private TestJournal() {}

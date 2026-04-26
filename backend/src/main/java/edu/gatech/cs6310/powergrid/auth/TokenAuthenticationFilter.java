@@ -14,12 +14,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Reads the Authorization: Bearer &lt;token&gt; header, looks up the session,
- * and populates the Spring SecurityContext with its roles. Missing or invalid
- * tokens leave the context anonymous — SecurityConfig decides which endpoints
- * require auth.
- */
 @Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 

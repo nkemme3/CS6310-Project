@@ -10,11 +10,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-/**
- * Ensures an ADMIN user exists after startup (and after journal replay).
- * Runs with a high order number so recovery finishes first — if a journaled
- * admin already exists we respect it.
- */
 @Component
 @Order(1000)
 public class AdminSeeder {

@@ -50,12 +50,11 @@ class JournalReplayTest {
         CompanyService companies = new CompanyService(pgs, journal);
 
         companies.addCompany("Atlanta Power Co", "APC", new BigDecimal("0.12"));
-        // Simulate a torn write: append a malformed line to the journal file.
+        // torn write
         Files.writeString(journal.journalFile(), "{\"type\":\"AddCompany\",\"longName\":\"X\"\tDEADBEEF\n",
             StandardCharsets.UTF_8, StandardOpenOption.APPEND);
 
         List<JournalCommand> replayed = journal.replay();
-        // The valid entry survives; the corrupt one is dropped.
         assertThat(replayed).hasSize(1);
         assertThat(replayed.get(0)).isInstanceOf(JournalCommand.AddCompanyCmd.class);
     }

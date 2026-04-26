@@ -83,10 +83,6 @@ public class PowerGridSystem {
         return ledger.stream().filter(e -> e.companyShortName().equals(companyShortName)).toList();
     }
 
-    // ------------------------------------------------------------------
-    // Snapshot / restore support (Phase 3 - Robustness mod)
-    // ------------------------------------------------------------------
-
     public SystemSnapshot toSnapshot() {
         synchronized (lock) {
             return new SystemSnapshot(

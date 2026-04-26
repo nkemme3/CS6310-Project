@@ -23,10 +23,6 @@ import edu.gatech.cs6310.powergrid.domain.RatePlan;
 import edu.gatech.cs6310.powergrid.domain.Substation;
 import edu.gatech.cs6310.powergrid.domain.Transformer;
 
-/**
- * Request/response records for the REST layer. Domain entities are not exposed
- * directly — every controller response maps to one of these view records.
- */
 public final class Dtos {
 
     private Dtos() {}

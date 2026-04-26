@@ -28,16 +28,6 @@ import edu.gatech.cs6310.powergrid.domain.RatePlan;
 import edu.gatech.cs6310.powergrid.domain.Substation;
 import edu.gatech.cs6310.powergrid.domain.Transformer;
 
-/**
- * Sealed union of every mutation the system can perform. Commands are the
- * canonical representation of a change: the service layer validates the
- * request, builds a command, appends it to the transaction journal, and then
- * calls {@link #apply(PowerGridSystem)} to update in-memory state.
- *
- * On recovery, the journal is replayed by invoking {@code apply} on each
- * successfully-read command. Because validation happened at original write
- * time, replay skips validation and directly mutates state.
- */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = JournalCommand.AddCompanyCmd.class,              name = "AddCompany"),
@@ -75,10 +65,7 @@ public sealed interface JournalCommand permits
     JournalCommand.AddLedgerEntryCmd,
     JournalCommand.CreateUserCmd {
 
-    /** Apply this command to the given grid, without validation. Assumes the caller holds the grid lock. */
     void apply(PowerGridSystem pgs);
-
-    // -- Company -------------------------------------------------------
 
     record AddCompanyCmd(String longName, String shortName, BigDecimal standardRate) implements JournalCommand {
         @Override
@@ -94,8 +81,6 @@ public sealed interface JournalCommand permits
             if (c != null) c.setStandardRate(newRate);
         }
     }
-
-    // -- Infrastructure ------------------------------------------------
 
     record AddPlantCmd(String companyShortName, String plantId, Location location,
                        BigDecimal buildCost, BigDecimal generationCostPerKWh,
@@ -156,8 +141,6 @@ public sealed interface JournalCommand permits
         }
     }
 
-    // -- Customer ------------------------------------------------------
-
     record CreateCustomerCmd(long accountNumber, String companyShortName, String name,
                              CustomerType customerType, Location location) implements JournalCommand {
         @Override
@@ -182,8 +165,6 @@ public sealed interface JournalCommand permits
         }
     }
 
-    // -- Employee ------------------------------------------------------
-
     record AddEmployeeCmd(String companyShortName, String employeeId, String name,
                           LocalDate startDate, BigDecimal hourlyWage) implements JournalCommand {
         @Override
@@ -194,8 +175,6 @@ public sealed interface JournalCommand permits
             if (c != null) c.getEmployeeIds().add(employeeId);
         }
     }
-
-    // -- Issues --------------------------------------------------------
 
     record ReportIssueCmd(long issueId, String companyShortName, AssetType assetType, String assetId,
                           BigDecimal hoursRequired, BigDecimal materialsCost, Instant reportedAt) implements JournalCommand {
@@ -231,8 +210,6 @@ public sealed interface JournalCommand permits
         }
     }
 
-    // -- Rate plans ----------------------------------------------------
-
     record AddRatePlanCmd(String planId, String companyShortName, BigDecimal ratePerKWh,
                           CustomerType customerType, Long accountNumber,
                           LocalDate effectiveStart, LocalDate effectiveEnd) implements JournalCommand {
@@ -246,8 +223,6 @@ public sealed interface JournalCommand permits
         }
     }
 
-    // -- Ledger --------------------------------------------------------
-
     record AddLedgerEntryCmd(long entryId, String companyShortName, LedgerEntryType entryType,
                              LocalDate periodStart, LocalDate periodEnd, BigDecimal kWh,
                              BigDecimal amount, String description, Map<String, String> relatedIds) implements JournalCommand {
@@ -258,8 +233,6 @@ public sealed interface JournalCommand permits
             pgs.bumpLedgerSequenceIfNeeded(entryId);
         }
     }
-
-    // -- Users ---------------------------------------------------------
 
     record CreateUserCmd(String username, String passwordHash, Set<Role> roles, Instant createdAt) implements JournalCommand {
         @Override

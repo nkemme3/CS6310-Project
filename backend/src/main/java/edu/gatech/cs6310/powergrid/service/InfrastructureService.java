@@ -27,7 +27,6 @@ public class InfrastructureService {
         this.journal = journal;
     }
 
-    /** Legacy overload — callers that don't specify an energy source get the default. */
     public PowerPlant addPlant(String companyShortName, String plantId, Location location,
                                BigDecimal buildCost, BigDecimal generationCostPerKWh) {
         return addPlant(companyShortName, plantId, location, buildCost, generationCostPerKWh, null);

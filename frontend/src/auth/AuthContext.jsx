@@ -7,9 +7,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
 
-  // On mount, if a token is in localStorage, try to resolve it into a session.
-  // If the token is expired/invalid the /me call returns 401 which our axios
-  // interceptor turns into a powergrid:auth-expired event, and we clear user.
   useEffect(() => {
     const token = tokenStore.get();
     if (!token) { setReady(true); return; }
@@ -19,7 +16,6 @@ export function AuthProvider({ children }) {
       .finally(() => setReady(true));
   }, []);
 
-  // Axios interceptor dispatches this when any request comes back 401.
   useEffect(() => {
     const onExpired = () => setUser(null);
     window.addEventListener('powergrid:auth-expired', onExpired);

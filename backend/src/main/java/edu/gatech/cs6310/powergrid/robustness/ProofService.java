@@ -7,11 +7,6 @@ import java.util.Set;
 import edu.gatech.cs6310.powergrid.domain.Location;
 import edu.gatech.cs6310.powergrid.error.SystemError;
 
-/**
- * Centralized pre-commit validation. Every service-layer mutation routes
- * capacity/distance/uniqueness/existence checks through these methods so the
- * rules live in exactly one place.
- */
 public final class ProofService {
 
     private ProofService() {}

@@ -12,10 +12,6 @@ import edu.gatech.cs6310.powergrid.domain.RatePlan;
 import edu.gatech.cs6310.powergrid.domain.Substation;
 import edu.gatech.cs6310.powergrid.domain.Transformer;
 
-/**
- * Immutable, serializable view of PowerGridSystem used for checkpoints.
- * Maps preserve insertion order when written/read through Jackson.
- */
 public record SystemSnapshot(
     long version,
     Sequences sequences,

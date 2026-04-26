@@ -16,12 +16,6 @@ import edu.gatech.cs6310.powergrid.error.ErrorCode;
 
 import java.util.Map;
 
-/**
- * Bearer-token security: stateless sessions, a token filter that populates the
- * SecurityContext, and method-level @PreAuthorize on controllers. Only
- * /api/health and /api/auth/login are public. Everything else requires an
- * authenticated user; individual endpoints further restrict by role.
- */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {

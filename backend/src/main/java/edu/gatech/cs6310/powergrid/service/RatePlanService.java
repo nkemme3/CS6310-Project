@@ -63,9 +63,6 @@ public class RatePlanService {
         }
     }
 
-    /**
-     * Account-specific plans outrank generic plans for the same (company, type, date).
-     */
     public BigDecimal resolveRate(Customer customer, LocalDate onDate) {
         Optional<RatePlan> best = pgs.ratePlans().values().stream()
             .filter(p -> p.getCompanyShortName().equals(customer.getCompanyShortName()))

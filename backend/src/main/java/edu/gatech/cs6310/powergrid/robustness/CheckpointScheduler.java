@@ -9,11 +9,6 @@ import org.springframework.stereotype.Component;
 
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
 
-/**
- * Periodically snapshots the in-memory grid to disk. After a successful
- * snapshot write, the transaction journal is truncated since the checkpoint
- * now subsumes every command in it.
- */
 @Component
 public class CheckpointScheduler {
 

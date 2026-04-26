@@ -13,11 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Atomic checkpoint I/O. Writes are done to a temp file then renamed over the
- * destination, so readers never see a partially-written file even if the
- * process crashes mid-write.
- */
 @Component
 public class CheckpointManager {
 

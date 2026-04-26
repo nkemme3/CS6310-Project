@@ -7,10 +7,6 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Stored user record. passwordHash is a bcrypt digest produced by UserService.
- * Roles are a set so an operator can also hold VIEWER, etc.
- */
 public final class User {
 
     private final String username;

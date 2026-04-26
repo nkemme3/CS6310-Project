@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.gatech.cs6310.powergrid.error.ErrorCode;
 import edu.gatech.cs6310.powergrid.error.SystemError;
 
-/**
- * Login / logout / current user endpoints, plus admin-only user management.
- */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -74,8 +71,6 @@ public class AuthController {
         }
         throw new SystemError(ErrorCode.UNAUTHORIZED, "Session could not be resolved.", null, "Log in again.");
     }
-
-    // -- admin-only user management -----------------------------------
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")

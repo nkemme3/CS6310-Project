@@ -1,17 +1,16 @@
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.jsx';
+import { getHealth } from '../api/client.js';
 
-// Role gates mirror the backend @PreAuthorize matrix. Everyone signed in can
-// read everything, so we just use these to decide whether to show sections
-// that exist primarily to drive mutations.
 const links = [
-  { to: '/',               label: 'Dashboard',      end: true },
+  { to: '/',               label: 'Overview',       end: true },
   { to: '/companies',      label: 'Companies' },
-  { to: '/infrastructure', label: 'Infrastructure' },
+  { to: '/infrastructure', label: 'Infra' },
   { to: '/customers',      label: 'Customers' },
-  { to: '/employees',      label: 'Employees' },
+  { to: '/employees',      label: 'Crew' },
   { to: '/issues',         label: 'Issues' },
-  { to: '/rate-plans',     label: 'Rate Plans' },
+  { to: '/rate-plans',     label: 'Tariffs' },
   { to: '/billing',        label: 'Billing' },
   { to: '/reports',        label: 'Reports' },
 ];
@@ -19,17 +18,35 @@ const links = [
 export default function Layout() {
   const { user, logout } = useAuth();
   const nav = useNavigate();
+  const [online, setOnline] = useState(true);
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    let cancelled = false;
+    const ping = () => {
+      getHealth().then(() => !cancelled && setOnline(true))
+                 .catch(() => !cancelled && setOnline(false));
+    };
+    ping();
+    const id = setInterval(ping, 15000);
+    const tick = setInterval(() => setNow(new Date()), 1000);
+    return () => { cancelled = true; clearInterval(id); clearInterval(tick); };
+  }, []);
 
   const onLogout = async () => {
     await logout();
     nav('/login', { replace: true });
   };
 
+  const ts = now.toISOString().slice(0, 19).replace('T', ' ');
+
   return (
     <div className="layout">
-      <aside className="nav">
-        <h1>Power Grid</h1>
-        <p className="subtitle">CS6310 Group 30</p>
+      <header className="nav">
+        <div className="nav-brand">
+          <h1>EPD Console</h1>
+          <p className="subtitle">Electric Power Distribution // Group 30</p>
+        </div>
         <nav>
           {links.map((l) => (
             <NavLink key={l.to} to={l.to} end={l.end}
@@ -38,17 +55,27 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
-        {user && (
-          <div className="nav-user">
-            <div className="nav-user-name">{user.username}</div>
-            <div className="nav-user-roles">{user.roles.join(', ')}</div>
-            <button type="button" className="nav-logout" onClick={onLogout}>Sign out</button>
-          </div>
-        )}
-      </aside>
+      </header>
       <main className="content">
         <Outlet />
       </main>
+      <footer className="status-strip">
+        <div className="left">
+          <span><span className="dot" style={{ background: online ? 'var(--moss)' : 'var(--rust)' }} />
+            {online ? 'LINK OK' : 'LINK DOWN'}
+          </span>
+          <span>UTC {ts}</span>
+        </div>
+        <div className="right">
+          {user && (
+            <>
+              <span>OPERATOR <strong>{user.username}</strong></span>
+              <span className="pill">{user.roles.join(' · ')}</span>
+              <button type="button" className="status-logout" onClick={onLogout}>Sign out</button>
+            </>
+          )}
+        </div>
+      </footer>
     </div>
   );
 }

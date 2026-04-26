@@ -11,11 +11,6 @@ import org.springframework.stereotype.Component;
 
 import edu.gatech.cs6310.powergrid.domain.PowerGridSystem;
 
-/**
- * On application start, rehydrates {@link PowerGridSystem} from the most
- * recent checkpoint (if any) and replays any journal entries written since
- * that checkpoint.
- */
 @Component
 public class RecoveryService {
 

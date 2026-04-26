@@ -2,13 +2,6 @@ package edu.gatech.cs6310.powergrid.domain;
 
 import java.math.BigDecimal;
 
-/**
- * Classification of primary fuel / generation technology for a power plant.
- * Each source carries a default marginal fuel cost (USD per kWh) and a carbon
- * intensity (kg CO2 per kWh) used by reporting to break production down by
- * source. The plant's own {@code generationCostPerKWh} field stays free-form
- * so operators can tune cost against market reality.
- */
 public enum EnergySourceType {
     SOLAR       (new BigDecimal("0.03"), new BigDecimal("0.00"),  true),
     WIND        (new BigDecimal("0.02"), new BigDecimal("0.00"),  true),
