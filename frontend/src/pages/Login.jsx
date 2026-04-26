@@ -29,15 +29,16 @@ export default function Login() {
   return (
     <div className="login-shell">
       <form className="login-card" onSubmit={submit}>
-        <h1>EPD Console</h1>
-        <p className="subtitle">CS6310 // Group 30 // Phase 3</p>
+        <div className="login-mark" />
+        <h1>PowerGrid Console</h1>
+        <p className="subtitle">Sign in to continue</p>
         <label>
-          Operator ID
+          Username
           <input autoFocus autoComplete="username" required
             value={username} onChange={(e) => setUsername(e.target.value)} />
         </label>
         <label>
-          Passphrase
+          Password
           <input type="password" autoComplete="current-password" required
             value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
@@ -49,9 +50,9 @@ export default function Login() {
           </div>
         )}
         <button type="submit" disabled={busy}>
-          {busy ? 'Authenticating…' : 'Authorize'}
+          {busy ? 'Signing in…' : 'Sign in'}
         </button>
-        <p className="hint">Bootstrap credentials &mdash; <code>admin</code> / <code>admin123</code></p>
+        <p className="hint">Default admin: <code>admin</code> / <code>admin123</code></p>
       </form>
     </div>
   );
