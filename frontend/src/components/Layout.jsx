@@ -43,7 +43,6 @@ export default function Layout() {
           <div className="brand-mark" />
           <div>
             <h1>PowerGrid Console</h1>
-            <p className="brand-sub">Group 30 &middot;</p>
           </div>
         </div>
         <nav>
